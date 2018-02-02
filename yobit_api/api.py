@@ -15,8 +15,7 @@ class YobitApi:
         data = {} if not data else data
 
         request_url = self.API_URL.format(method_name) if method_name else self.API_URL
-        print('request_url', request_url)
-        print('headers', headers)
+
         if method == 'get':
             return Request().get(request_url, params)
         elif method == 'post':

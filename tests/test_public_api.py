@@ -1,5 +1,5 @@
 import unittest
-from app.api import PublicApi
+from yobit_api.api import PublicApi
 from time import sleep
 
 

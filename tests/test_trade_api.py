@@ -1,5 +1,5 @@
 import unittest
-from app.api import TradeApi
+from yobit_api.api import TradeApi
 
 YOBIT_KEY = ''
 YOBIT_SECRET_KEY = ''

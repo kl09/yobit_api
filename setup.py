@@ -4,7 +4,7 @@ import ast
 
 _version_re = re.compile(r'__version__\s+=\s+(.*)')
 
-with open('app/__init__.py', 'rb') as f:
+with open('yobit_api/__init__.py', 'rb') as f:
     version = str(ast.literal_eval(_version_re.search(
         f.read().decode('utf-8')).group(1)))
 
@@ -16,14 +16,13 @@ try:
 except ImportError:
     from distutils.core import setup
 
-
 setup(
-    name='yobit-api',
+    name='yobit_api',
     version=version,
-    packages=['yobit-api'],
+    packages=['yobit_api'],
     url='',
     license='',
-    author='yobit-api',
+    author='yobit_api',
     author_email='',
     description=''
 )
