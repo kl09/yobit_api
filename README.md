@@ -2,10 +2,10 @@
 Yobit API Python wrapper.
 =========================
 
-
-Install: 
+## Install
+```bash
 sudo pip3 install git+https://git@github.com/kl09/yobit_api.git
-
+```
 
 >
 
@@ -25,3 +25,5 @@ Example for TradeApi:
 import yobit_api
 res = yobit_api.TradeApi(key="yobit_key", secret_key="yobit_secret_key").get_info()
 ```
+
+By default you can use Cloudflare scrape. This module helps to bypass Cloudflare's anti-bot page.

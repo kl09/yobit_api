@@ -7,9 +7,23 @@ import datetime
 
 class YobitApi:
     API_URL = None
+    USE_CLOUDFLARE_SCRAPE = True
 
     def _make_request(self, method_name: str = None, method: str = 'get', params: dict = None, data: dict = None,
-                      headers: dict = None, url_number: int = 0):
+                      headers: dict = None, url_number: int = 0, use_cloudflare_scrape: bool = False):
+        """
+        Make Request
+
+        :param method_name:
+        :param method:                 get or post
+        :param params:
+        :param data:
+        :param headers:
+        :param url_number:             number of API_URL list to use
+        :param use_cloudflare_scrape:  Yobit has DDoS protection by Cloudflare and its work on API too ))). This module
+        helps to bypass Cloudflare's anti-bot page.
+        :return:
+        """
         params = {} if not params else params
         headers = {} if not headers else headers
         data = {} if not data else data
@@ -17,15 +31,18 @@ class YobitApi:
         request_url = self.API_URL[url_number].format(method_name) if method_name else self.API_URL
 
         if method == 'get':
-            res = Request().get(request_url, params)
+            res = Request().get(request_url, params, use_cloudflare_scrape)
         elif method == 'post':
-            res = Request().post(request_url, params, data, headers)
+            res = Request().post(request_url, params, data, headers, use_cloudflare_scrape)
         else:
             return None
 
         # if answer status_code is like 50x lets try another url. This is the fastest way to come through Cloudflare
         if str(res['status_code'])[:2] == '50' and len(self.API_URL) > url_number + 1:
             return self._make_request(method_name, method, params, data, headers, url_number=url_number + 1)
+        elif str(res['status_code'])[:2] == '50' and self.USE_CLOUDFLARE_SCRAPE is True:
+            return self._make_request(method_name, method, params, data, headers, url_number,
+                                      use_cloudflare_scrape=True)
         else:
             return res
 
@@ -35,6 +52,9 @@ class PublicApi(YobitApi):
         "https://yobit.io/api/3/{0}",
         "https://yobit.net/api/3/{0}",
     ]
+
+    def __init__(self, use_cloudflare_scrape: bool = True):
+        self.USE_CLOUDFLARE_SCRAPE = use_cloudflare_scrape
 
     def get_info(self):
         """
@@ -117,7 +137,7 @@ class TradeApi(YobitApi):
         "https://yobit.net/tapi/"
     ]
 
-    def __init__(self, key: str, secret_key: str):
+    def __init__(self, key: str, secret_key: str, use_cloudflare_scrape: bool = True):
         self.key = key
         self.secret_key = secret_key
 
@@ -125,6 +145,8 @@ class TradeApi(YobitApi):
             "Key": self.key,
             "Sign": self.key,
         }
+
+        self.USE_CLOUDFLARE_SCRAPE = use_cloudflare_scrape
 
     def _get_headers(self, data: dict):
         data['nonce'] = str(int(datetime.datetime.now().timestamp()))
