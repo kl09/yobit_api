@@ -51,10 +51,8 @@ class PublicApi(YobitApi):
         """
 
         result = self._make_request("ticker/%s" % pair).get("result")
-        if result.get(pair):
-            return result.get(pair)
-        else:
-            return result
+
+        return result.get(pair) if result.get(pair) else result
 
     def get_pairs_ticker(self, pairs: list):
         """
@@ -75,10 +73,8 @@ class PublicApi(YobitApi):
         """
 
         result = self._make_request("depth/%s" % pair, params={"limit": int(limit)}).get("result")
-        if result.get(pair):
-            return result.get(pair)
-        else:
-            return result
+
+        return result.get(pair) if result.get(pair) else result
 
     def get_pairs_depth(self, pairs: list, limit: int = 150):
         """
@@ -100,10 +96,8 @@ class PublicApi(YobitApi):
         """
 
         result = self._make_request("trades/%s" % pair, params={"limit": int(limit)}).get("result")
-        if result.get(pair):
-            return result.get(pair)
-        else:
-            return result
+
+        return result.get(pair) if result.get(pair) else result
 
     def get_pairs_trades(self, pairs: list, limit: int = 150):
         """
