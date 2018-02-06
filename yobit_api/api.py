@@ -158,24 +158,41 @@ class TradeApi(YobitApi):
 
         return self._make_request(method="post", data=data, headers=self._get_headers(data)).get("result")
 
-    def trade(self, pair: str, action: str, rate: float, amount: float):
+    def buy(self, pair: str, price: float or str, amount: float):
         """
         Method that allows creating new orders for stock exchange trading
         Requirements: priviledges of key info&trade
         :param pair:        pair (example: ltc_btc)
-        :param action:      transaction type (example: buy or sell)
-        :param rate:        exchange rate for buying or selling (value: numeral)
-        :param amount:      amount needed for buying or selling (value: numeral)
+        :param price:       exchange rate for buying (value: float or string)
+        :param amount:      amount needed for buying (value: int)
         :return:
         """
-        if action not in ['buy', 'sell']:
-            raise Exception('action should be `buy` or `sell')
-        
+
         data = {
             "method": "Trade",
             "pair": pair,
-            "type": action,
-            "rate": rate,
+            "type": 'buy',
+            "rate": price if isinstance(price, str) else '%.8f' % price,
+            "amount": amount,
+        }
+
+        return self._make_request(method="post", data=data, headers=self._get_headers(data)).get("result")
+
+    def sell(self, pair: str, price: float or str, amount: float):
+        """
+        Method that allows creating new orders for stock exchange trading
+        Requirements: priviledges of key info&trade
+        :param pair:        pair (example: ltc_btc)
+        :param price:       exchange rate for selling (value: float or string)
+        :param amount:      amount needed for selling (value: int)
+        :return:
+        """
+
+        data = {
+            "method": "Trade",
+            "pair": pair,
+            "type": "sell",
+            "rate": price if isinstance(price, str) else '%.8f' % price,
             "amount": amount,
         }
 
