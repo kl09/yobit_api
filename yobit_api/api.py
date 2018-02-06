@@ -28,7 +28,7 @@ class YobitApi:
         headers = {} if not headers else headers
         data = {} if not data else data
 
-        request_url = self.API_URL[url_number].format(method_name) if method_name else self.API_URL
+        request_url = self.API_URL[url_number].format(method_name) if method_name else self.API_URL[url_number]
 
         if method == 'get':
             res = Request().get(request_url, params, use_cloudflare_scrape)
