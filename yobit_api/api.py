@@ -9,21 +9,32 @@ class YobitApi:
     API_URL = None
 
     def _make_request(self, method_name: str = None, method: str = 'get', params: dict = None, data: dict = None,
-                      headers: dict = None):
+                      headers: dict = None, url_number: int = 0):
         params = {} if not params else params
         headers = {} if not headers else headers
         data = {} if not data else data
 
-        request_url = self.API_URL.format(method_name) if method_name else self.API_URL
+        request_url = self.API_URL[url_number].format(method_name) if method_name else self.API_URL
 
         if method == 'get':
-            return Request().get(request_url, params)
+            res = Request().get(request_url, params)
         elif method == 'post':
-            return Request().post(request_url, params, data, headers)
+            res = Request().post(request_url, params, data, headers)
+        else:
+            return None
+
+        # if answer status_code is like 50x lets try another url. This is the fastest way to come through Cloudflare
+        if str(res['status_code'])[:2] == '50' and len(self.API_URL) > url_number + 1:
+            return self._make_request(method_name, method, params, data, headers, url_number=url_number + 1)
+        else:
+            return res
 
 
 class PublicApi(YobitApi):
-    API_URL = "https://yobit.net/api/3/{0}"
+    API_URL = [
+        "https://yobit.io/api/3/{0}",
+        "https://yobit.net/api/3/{0}",
+    ]
 
     def get_info(self):
         """
@@ -39,7 +50,11 @@ class PublicApi(YobitApi):
         :return:
         """
 
-        return self._make_request("ticker/%s" % pair).get("result")
+        result = self._make_request("ticker/%s" % pair).get("result")
+        if result.get(pair):
+            return result.get(pair)
+        else:
+            return result
 
     def get_pairs_ticker(self, pairs: list):
         """
@@ -59,7 +74,11 @@ class PublicApi(YobitApi):
         :return:
         """
 
-        return self._make_request("depth/%s" % pair, params={"limit": int(limit)}).get("result")
+        result = self._make_request("depth/%s" % pair, params={"limit": int(limit)}).get("result")
+        if result.get(pair):
+            return result.get(pair)
+        else:
+            return result
 
     def get_pairs_depth(self, pairs: list, limit: int = 150):
         """
@@ -80,7 +99,11 @@ class PublicApi(YobitApi):
         :return:
         """
 
-        return self._make_request("trades/%s" % pair, params={"limit": int(limit)}).get("result")
+        result = self._make_request("trades/%s" % pair, params={"limit": int(limit)}).get("result")
+        if result.get(pair):
+            return result.get(pair)
+        else:
+            return result
 
     def get_pairs_trades(self, pairs: list, limit: int = 150):
         """
@@ -95,7 +118,10 @@ class PublicApi(YobitApi):
 
 
 class TradeApi(YobitApi):
-    API_URL = "https://yobit.net/tapi/"
+    API_URL = [
+        "https://yobit.io/tapi/",
+        "https://yobit.net/tapi/"
+    ]
 
     def __init__(self, key: str, secret_key: str):
         self.key = key
@@ -144,7 +170,7 @@ class TradeApi(YobitApi):
         """
         if action not in ['buy', 'sell']:
             raise Exception('action should be `buy` or `sell')
-
+        
         data = {
             "method": "Trade",
             "pair": pair,

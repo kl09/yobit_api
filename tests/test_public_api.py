@@ -14,13 +14,13 @@ class InfoTests(unittest.TestCase):
 class TickerTests(unittest.TestCase):
     def setUp(self):
         # or u will get `rate limited and banned`
-        sleep(0.3)
+        sleep(0.7)
 
     def test_valid_ticker(self):
         res = PublicApi().get_pair_ticker(pair="ltc_btc")
 
         self.assertIsNotNone(res)
-        self.assertIsNotNone(res.get("ltc_btc"))
+        self.assertIsNotNone(res.get("high"))
 
     def test_invalid_ticker(self):
         res = PublicApi().get_pair_ticker(pair="ltc_btcAa")
@@ -52,13 +52,13 @@ class TickerTests(unittest.TestCase):
 class DepthTests(unittest.TestCase):
     def setUp(self):
         # or u will get `rate limited and banned`
-        sleep(0.3)
+        sleep(0.7)
 
     def test_valid_depth(self):
         res = PublicApi().get_pair_depth(pair="ltc_btc")
 
         self.assertIsNotNone(res)
-        self.assertIsNotNone(res.get("ltc_btc"))
+        self.assertIsNotNone(res.get("bids"))
 
     def test_invalid_depth(self):
         res = PublicApi().get_pair_depth(pair="ltc_btcAa")
@@ -88,10 +88,10 @@ class DepthTests(unittest.TestCase):
 
     def test_depth_limit(self):
         res = PublicApi().get_pair_depth(pair="ltc_btc", limit=166)
-        self.assertEqual(166, len(res['ltc_btc']['bids']))
+        self.assertEqual(166, len(res['bids']))
 
         res = PublicApi().get_pair_depth(pair="ltc_btc", limit=177)
-        self.assertEqual(177, len(res['ltc_btc']['bids']))
+        self.assertEqual(177, len(res['bids']))
 
     def test_depths_limit(self):
         res = PublicApi().get_pairs_depth(pairs=['ltc_btc', 'btc_usd', 'etc_btc'], limit=177)
@@ -104,13 +104,14 @@ class DepthTests(unittest.TestCase):
 class TradeTests(unittest.TestCase):
     def setUp(self):
         # or u will get `rate limited and banned`
-        sleep(0.3)
+        sleep(0.7)
 
     def test_valid_trade(self):
         res = PublicApi().get_pair_trades(pair="ltc_btc")
 
         self.assertIsNotNone(res)
-        self.assertIsNotNone(res.get("ltc_btc"))
+        self.assertIsNotNone(res[0].get("price"))
+        self.assertIsNotNone(res[0].get("type"))
 
     def test_invalid_trade(self):
         res = PublicApi().get_pair_trades(pair="ltc_btcAa")
@@ -141,10 +142,10 @@ class TradeTests(unittest.TestCase):
     def test_trade_limit(self):
         res = PublicApi().get_pair_trades(pair="ltc_btc", limit=166)
 
-        self.assertEqual(166, len(res['ltc_btc']))
+        self.assertEqual(166, len(res))
 
         res = PublicApi().get_pair_trades(pair="ltc_btc", limit=177)
-        self.assertEqual(177, len(res['ltc_btc']))
+        self.assertEqual(177, len(res))
 
     def test_trades_limit(self):
         res = PublicApi().get_pairs_trades(pairs=['ltc_btc', 'btc_usd', 'etc_btc'], limit=177)
