@@ -27,3 +27,6 @@ res = yobit_api.TradeApi(key="yobit_key", secret_key="yobit_secret_key").get_inf
 ```
 
 By default you can use Cloudflare scrape. This module helps to bypass Cloudflare's anti-bot page.
+
+Star it if u like
+
