@@ -4,7 +4,7 @@ Yobit API Python wrapper.
 
 ## Install
 ```bash
-sudo pip3 install git+https://git@github.com/kl09/yobit_api.git
+pip3 install git+https://git@github.com/kl09/yobit_api.git
 ```
 
 >
